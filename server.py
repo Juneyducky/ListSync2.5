@@ -110,20 +110,19 @@ class MyHandler(BaseHTTPRequestHandler):
                 try:
                     conn = mysql.connector.connect(**mysql_config)
                     cursor = conn.cursor()
-                    query = "SELECT list_name, type FROM lists WHERE user_id = %s"
+                    query = "SELECT item_name, description, photo_path FROM items WHERE user_id = %s"
                     cursor.execute(query, (current_user_id,))
                     result = cursor.fetchall()
-                    private_list = [item[0] for item in result if item[1] == "private"]
-                    public_list = [item[0] for item in result if item[1] == "public"]
-                    print(private_list, public_list)
+                    item_list = [item[0] for item in result if item[1]]
+                    print(item_list)
                 except mysql.connector.Error as err:
                     self._send_response(f"Error: {err}")
                 finally:
                     cursor.close()
                     conn.close()
 
-                template = env.get_template('loggedinpage.html')
-                rendered_template = template.render(private_list=private_list, public_list = public_list)
+                template = env.get_template('list.html')
+                rendered_template = template.render( item_list = item_list)
                 self._send_response(rendered_template.encode())
 
             elif self.path.startswith('/static/'):
