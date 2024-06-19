@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ListSync - Your Lists</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <style>
+        body {
+            font-family: "Times New Roman", Georgia, Serif;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+        h1, h2, h4, h5, h6 {
+            font-family: "Playfair Display";
+            letter-spacing: 4px;
+        }
+        h3 {
+            color: black;
+        }
+        .w3-bar-item.w3-button {
+            letter-spacing: 1px;
+        }
+        .container {
+            text-align: center;
+        }
+        .logo {
+            width: 150px;
+            height: auto;
+        }
+        .list-container {
+            padding: 20px;
+        }
+        .list-item {
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .add-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+    <script>
+        function openModal(type) {
+            document.getElementById('listType').value = type;
+            document.getElementById('addListModal').style.display = 'block';
+        }
+        function closeModal() {
+            document.getElementById('addListModal').style.display = 'none';
+        }
+    </script>
+</head>
+<body>
+    <!-- Navbar (sit on top) -->
+    <div class="w3-top">
+        <div class="w3-bar w3-white w3-padding w3-card" style="letter-spacing:4px;">
+            <a href="#home" class="w3-bar-item w3-button">ListSync</a>
+            <div class="w3-right w3-hide-small">
+                <a href="#private" class="w3-bar-item w3-button">Private Lists</a>
+                <a href="#public" class="w3-bar-item w3-button">Public Lists</a>
+          
+            </div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="w3-display-container w3-content " style="max-width:1600px;min-width:500px" id="home">
+        <div class="w3-display-middle w3-padding-large">
+            <h1>      Welcome to Your Lists</h1>
+        </div>
+        <img class="w3-image" src="/static/organize_digital_life.width-1200.format-webp.webp" alt="Lists" width="1600" height="800">
+    </header>
+
+    <!-- Page content -->
+    <div class="w3-content" style="max-width:1100px">
+        
+        <!-- Private Lists Section -->
+        <div class="w3-row w3-padding-64" id="private">
+            <div class="w3-col m6 w3-padding-large w3-hide-small"><br><br>
+                <img src="/static/Simply-Spaced-BP-How-to-organize-your-printed-photo-collection-3.jpg" class="w3-round w3-image w3-opacity-min" alt="Private Lists" width="600" height="750">
+            </div>
+
+            <div class="w3-col m6 w3-padding-large">
+                <h1 class="w3-center">Private Lists</h1><br>
+                <div class="list-container">
+                    <ul>
+                        {% for item in private_list %}
+                            <li><a href="list_{{item}}" style="text-decoration:none">{{ item }}</a></li>
+                        {% endfor %}
+                    </ul>
+                    <!-- Add List Button -->
+                    <button class="add-button" onclick="openModal('private')">Add Private List</button>
+                </div>
+            </div>
+        </div>
+        
+        <hr>
+        
+        <!-- Public Lists Section -->
+        <div class="w3-row w3-padding-64" id="public">
+            <div class="w3-col m6 w3-padding-large w3-hide-small"><br>
+                <img src="/static/shared.webp" class="w3-round w3-image w3-opacity-min" alt="Public Lists" width="600" height="750">
+            </div>
+
+            <div class="w3-col m6 w3-padding-large">
+                <h1 class="w3-center">Public Lists</h1><br>
+                <div class="list-container">
+                    
+                    <ul>
+                        {% for item in public_list %}
+                            <li><a href="list_{{item}}">{{ item }}</a></li>
+                        {% endfor %}
+                    </ul>
+                    <!-- Add List Button -->
+                    <button class="add-button" onclick="openModal('public')">Add Public List</button>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+    </div>
+
+    <!-- Add List Modal -->
+    <div id="addListModal" class="w3-modal">
+        <div class="w3-modal-content w3-animate-top w3-card-4">
+            <header class="w3-container w3-teal"> 
+                <span onclick="closeModal()" class="w3-button w3-display-topright">&times;</span>
+                <h2>Add New List</h2>
+            </header>
+            <div class="w3-container">
+                <form action="/addlist" method="POST">
+                    <input type="hidden" id="listType" name="type">
+                    <p><label>List Name</label></p>
+                    <p><input class="w3-input w3-border" type="text" name="list_name" required></p>
+                    <p><label>Description</label></p>
+                    <p><textarea class="w3-input w3-border" name="description" required></textarea></p>
+                    <p><button class="w3-button w3-teal" type="submit">Add List</button></p>
+                </form>
+            </div>
+            <footer class="w3-container w3-teal">
+                <p></p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="w3-center w3-light-grey w3-padding-32">
+        <p>Powered by <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" title="my suffering" target="_blank" class="w3-hover-text-green">w3.css</a></p>
+    </footer>
+</body>
+</html>

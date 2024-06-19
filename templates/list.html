@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ListSync - Private List</title>
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <style>
+        body {
+            font-family: "Times New Roman", Georgia, Serif;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+        h1, h2, h4, h5, h6 {
+            font-family: "Playfair Display";
+            letter-spacing: 4px;
+        }
+        h3 {
+            color: black;
+        }
+        .container {
+            text-align: center;
+        }
+        .logo {
+            width: 150px;
+            height: auto;
+        }
+        .item-container {
+            padding: 20px;
+        }
+        .item {
+            padding: 10px;
+            margin-bottom: 10px;
+            background-color: white;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .add-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <br><br>
+    <h1>This is {{list_name}}</h1>
+    <!-- Navbar (sit on top) -->
+    <div class="w3-top">
+        <div class="w3-bar w3-white w3-padding w3-card" style="letter-spacing:4px;">
+            <a href="/loggedinpage" class="w3-bar-item w3-button">ListSync</a>
+          
+        </div>
+    </div>
+
+    <!-- Page content -->
+    <div class="w3-content" style="max-width:1100px">
+        
+        <!-- Item List Section -->
+        <div class="w3-row w3-padding-64" id="items">
+
+            <div class="w3-col m6 w3-padding-32">
+                <h1 class="w3-center">Items</h1><br>
+                <div class="item-container">
+                    <ul>
+                        {% for item in private_list %}
+                            <li><a href="list_{{item}}">{{ item }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <!-- Add Item Button -->
+                <button class="add-button" onclick="openItemModal()">Add Item</button>
+            </div>
+        </div>
+
+        <!-- End page content -->
+    </div>
+
+    <!-- Add Item Modal -->
+    <div id="addItemModal" class="w3-modal">
+        <div class="w3-modal-content w3-animate-top w3-card-4">
+            <header class="w3-container w3-teal"> 
+                <span onclick="closeItemModal()" class="w3-button w3-display-topright">&times;</span>
+                <h2>Add New Item</h2>
+            </header>
+            <div class="w3-container">
+                <form id="addItemForm" action="/additem" method="POST" enctype="multipart/form-data">
+                    <p><label>Item Name</label></p>
+                    <p><input class="w3-input w3-border" type="text" name="item_name" required></p>
+                    <p><label>Description</label></p>
+                    <p><textarea class="w3-input w3-border" name="description" required></textarea></p>
+                    <p><label>Upload Photo</label></p>
+                    <p><input class="w3-input w3-border" type="file" name="photo" accept="image/*" required></p>
+                    <p><button class="w3-button w3-teal" type="submit">Add Item</button></p>
+                </form>
+            </div>
+            <footer class="w3-container w3-teal">
+                <p></p>
+            </footer>
+        </div>
+    </div>
+    
+
+    <!-- Footer -->
+    <footer class="w3-center w3-light-grey w3-padding-32">
+        <p>Powered by <a href="https://www.youtube.com/watch?v=dQw4w9WgXcQ" title="my suffering" target="_blank" class="w3-hover-text-green">w3.css</a></p>
+    </footer>
+
+    <script>
+        function openItemModal() {
+            document.getElementById('addItemModal').style.display = 'block';
+        }
+        function closeItemModal() {
+            document.getElementById('addItemModal').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
