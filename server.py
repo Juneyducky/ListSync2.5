@@ -94,15 +94,13 @@ class MyHandler(BaseHTTPRequestHandler):
                 rendered_template = template.render(private_list=private_list, public_list = public_list)
                 self._send_response(rendered_template.encode())
 
-# ///////////////////////////////////////////////////////////////////
-
             elif self.path.startswith("/list"):
                 list_name = self.path.split("_")[1]
                 template = env.get_template("list.html")
                 rendered_template = template.render(list_name=list_name)
                 self._send_response(rendered_template.encode())
 
-            # הוספתי פה את החיבור לרשימת חפצים בSQL
+            # elif self.path('/list_{{list_name}}'):
                 if not current_user_id:
                     self._send_response("Unauthorized - User not logged in", content_type='text/html')
                     return
@@ -124,6 +122,8 @@ class MyHandler(BaseHTTPRequestHandler):
                 template = env.get_template('list.html')
                 rendered_template = template.render( item_list = item_list)
                 self._send_response(rendered_template.encode())
+
+
 
             elif self.path.startswith('/static/'):
                 file_path = self.path.lstrip('/')
@@ -212,7 +212,6 @@ class MyHandler(BaseHTTPRequestHandler):
                 cursor.close()
                 conn.close()
 
-
         elif self.path == '/addlist':
             current_user_id = get_user_id_from_cookies(self.headers)
             if not current_user_id:
@@ -238,7 +237,7 @@ class MyHandler(BaseHTTPRequestHandler):
             finally:
                 cursor.close()
                 conn.close()
-# ------------------------
+
         elif self.path == '/additem':
             current_user_id = get_user_id_from_cookies(self.headers)
             if not current_user_id:
@@ -258,17 +257,18 @@ class MyHandler(BaseHTTPRequestHandler):
                 query = "INSERT INTO items (item_name, description, photo_path, user_id) VALUES (%s, %s, %s, %s)"
                 cursor.execute(query, (item_name, description, photo_path, current_user_id))
                 conn.commit()
-                # self._redirect(f'/list_{list_name}')
             except mysql.connector.Error as err:
                 self._send_response(f"Error: {err}")
             finally:
                 cursor.close()
                 conn.close()
+
+
           
 
         else:
                          self.send_error(404, 'File Not Found')
-        pass
+        # pass
 
 
 
