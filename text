@@ -4,25 +4,6 @@ CREATE DATABASE listsyncdb;
 
 USE listsyncdb;
 
--- table to store users login infromation
-CREATE TABLE users (
-    user_id INT AUTO_INCREMENT PRIMARY KEY,
-    username VARCHAR(50) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_login TIMESTAMP NULL
-);
-CREATE TABLE lists (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    list_name VARCHAR(255),
-    description TEXT,
-    type VARCHAR(50),
-    user_id INT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-
 
 -- יצירת טבלת המשתמשים
 CREATE TABLE users (
@@ -50,31 +31,6 @@ CREATE TABLE items (
     description TEXT,
     photo_path VARCHAR(255),
     list_id INT,
-    FOREIGN KEY (list_id) REFERENCES lists(list_id)
 );
 
-
-
-
-elif self.path == '/loggedinpage':
-    current_user_id = get_user_id_from_cookies(self.headers)
-    if not current_user_id:
-        self._send_response("Unauthorized - User not logged in", content_type='text/html')
-        return
-
-    try:
-        conn = mysql.connector.connect(**mysql_config)
-        cursor = conn.cursor()
-        query = "SELECT list_name FROM lists WHERE user_id = %s"
-        cursor.execute(query, (current_user_id,))
-        private_list = [row[0] for row in cursor.fetchall()]  # Extracting list names from the result
-    except mysql.connector.Error as err:
-        self._send_response(f"Error: {err}")
-    finally:
-        cursor.close()
-        conn.close()
-
-    template = env.get_template('loggedinpage.html')
-    rendered_template = template.render(private_list=private_list)
-    self._send_response(rendered_template.encode())
 
