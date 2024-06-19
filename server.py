@@ -102,7 +102,7 @@ class MyHandler(BaseHTTPRequestHandler):
                 rendered_template = template.render(list_name=list_name)
                 self._send_response(rendered_template.encode())
 
-            
+            # הוספתי פה את החיבור לרשימת חפצים בSQL
                 if not current_user_id:
                     self._send_response("Unauthorized - User not logged in", content_type='text/html')
                     return
