@@ -4,6 +4,12 @@ from http.cookies import SimpleCookie
 import datetime
 import os
 import urllib.parse as urlparse
+# Importing urllib.parse from the standard library
+from urllib import parse
+
+# Importing urllib3 after installing it via pip
+import urllib3
+
 
 import bcrypt
 
@@ -12,6 +18,7 @@ from mysql.connector import errorcode
 
 from jinja2 import FileSystemLoader, Environment
 from multipart import MultipartParser
+import urllib3
 from werkzeug.http import parse_options_header
 import json
 
@@ -100,29 +107,35 @@ class MyHandler(BaseHTTPRequestHandler):
                 rendered_template = template.render(list_name=list_name)
                 self._send_response(rendered_template.encode())
 
-            # elif self.path('/list_{{list_name}}'):
+            elif self.path('/additem'):
+                if self.path == '/addlist':
+                    current_user_id = get_user_id_from_cookies(self.headers)
                 if not current_user_id:
                     self._send_response("Unauthorized - User not logged in", content_type='text/html')
                     return
 
+                content_length = int(self.headers['Content-Length'])
+                post_data = self.rfile.read(content_length)
+                post_data = urlparse.parse_qs(post_data.decode('utf-8'))
+                list_name = post_data.get('list_name', [''])[0]
+                description = post_data.get('description', [''])[0]
+                list_type = post_data.get('type', [''])[0]
+
                 try:
                     conn = mysql.connector.connect(**mysql_config)
                     cursor = conn.cursor()
-                    query = "SELECT item_name, description, photo_path FROM items WHERE user_id = %s"
-                    cursor.execute(query, (current_user_id,))
-                    result = cursor.fetchall()
-                    item_list = [item[0] for item in result if item[1]]
-                    print(item_list)
+                    query = "INSERT INTO lists (list_name, description, type, user_id) VALUES (%s, %s, %s, %s)"
+                    cursor.execute(query, (list_name, description, list_type, current_user_id))
+                    conn.commit()
+                    encoded_list_name = urllib3.parse.quote(list_name)
+                    redirect_url = f'/list_{encoded_list_name}'
+                    print(f"Redirecting to: {redirect_url}")  # Debug statement
+                    self._redirect(redirect_url)
                 except mysql.connector.Error as err:
                     self._send_response(f"Error: {err}")
                 finally:
                     cursor.close()
                     conn.close()
-
-                template = env.get_template('list.html')
-                rendered_template = template.render( item_list = item_list)
-                self._send_response(rendered_template.encode())
-
 
 
             elif self.path.startswith('/static/'):
@@ -238,7 +251,11 @@ class MyHandler(BaseHTTPRequestHandler):
                 cursor.close()
                 conn.close()
 
+      
+
+
         elif self.path == '/additem':
+        
             current_user_id = get_user_id_from_cookies(self.headers)
             if not current_user_id:
                 self._send_response("Unauthorized - User not logged in", content_type='text/html')
@@ -249,19 +266,23 @@ class MyHandler(BaseHTTPRequestHandler):
             post_data = urlparse.parse_qs(post_data.decode('utf-8'))
             item_name = post_data.get('item_name', [''])[0]
             description = post_data.get('description', [''])[0]
-            photo_path = post_data.get('photo_path', [''])[0]
+            # photo_path = post_data.get('photo_path', [''])[0]
 
             try:
                 conn = mysql.connector.connect(**mysql_config)
                 cursor = conn.cursor()
                 query = "INSERT INTO items (item_name, description, photo_path, user_id) VALUES (%s, %s, %s, %s)"
-                cursor.execute(query, (item_name, description, photo_path, current_user_id))
+                cursor.execute(query, (item_name, description, current_user_id))
                 conn.commit()
+                self._redirect(f'/list_{list_name}')
+
             except mysql.connector.Error as err:
                 self._send_response(f"Error: {err}")
             finally:
                 cursor.close()
                 conn.close()
+
+        
 
 
           
